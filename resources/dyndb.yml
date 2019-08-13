@@ -1,0 +1,19 @@
+Resources:
+  FollowTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Delete # In prod we want to use 'Retain' as insurance against accidental stack deletion.
+    Properties:
+      TableName: FollowTable
+      AttributeDefinitions:
+        - AttributeName: username
+          AttributeType: S
+        - AttributeName: followed_username
+          AttributeType: S
+      KeySchema:
+        - AttributeName: username
+          KeyType: HASH
+        - AttributeName: followed_username
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2

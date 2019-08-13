@@ -1,0 +1,122 @@
+service: UpworkHackathon
+Description: Cognito Auth Demo
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  # Cognito settings
+  cognitoPoolName: ${self:custom.stage}-UpworkHackathon-user-pool
+  pythonRequirements:
+    dockerizePip: true
+
+
+provider:
+  name: aws
+  runtime: python2.7
+  stage: dev
+  profile: muralia # Replace with your name profile or remopve to use the default profile.
+  region: us-east-1 # N.Virginia. Replace with your a region you prefer.
+  logRetentionInDays: 14
+  environment:
+      USERPOOL_ID:
+        Ref: CognitoUserPool
+      CLIENT_ID:
+        Ref: CognitoUserPoolClient
+      REGION:
+        ${self:provider.region}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:DescribeStream
+        - dynamodb:GetRecords
+        - dynamodb:GetShardIterator
+        - dynamodb:ListStreams
+      Resource:
+        - "Fn::GetAtt": [ FollowTable, Arn ]
+
+plugins:
+  - serverless-python-requirements
+
+
+functions:
+  Sign_Up:
+    name: ${self:custom.stage}-Sign_Up
+    description: User signup.
+    handler: src/cognito.Sign_Up
+    memorySize: 128
+    timeout: 10
+    reservedConcurrency: 20
+    events:
+    - http:
+        path: signup
+        method: post
+        cors: true
+  Confirm_Sign_Up:
+    name: ${self:custom.stage}-Confirm_Sign_Up
+    description: Confirm User signup with emailed code.
+    handler: src/cognito.Confirm_Sign_Up
+    memorySize: 128
+    timeout: 10
+    reservedConcurrency: 20
+    events:
+    - http:
+        path: confirm
+        method: post
+        cors: true
+  Follow_User:
+    name: ${self:custom.stage}-Follow_User
+    description: Given a username/email/phone, follow the user.
+    handler: src/user.Follow_User
+    memorySize: 128
+    timeout: 10
+    reservedConcurrency: 20
+    events:
+    - http:
+        path: follow
+        method: post
+        cors: true
+        authorizer:
+          type: COGNITO_USER_POOLS
+          authorizerId:
+            Ref: ApiGatewayAuthorizer
+  Get_Followed_Users_List:
+    name: ${self:custom.stage}-Get_Followed_Users_List
+    description: Given a username, get all usernames followed.
+    handler: src/user.Get_Followed_Users_List
+    memorySize: 128
+    timeout: 10
+    reservedConcurrency: 20
+    events:
+    - http:
+        path: get_followers
+        method: get
+        cors: true
+        authorizer:
+          type: COGNITO_USER_POOLS
+          authorizerId:
+            Ref: ApiGatewayAuthorizer
+
+
+
+package:
+  exclude:
+    - node_modules/**
+    - set_env_vars.sh
+    - env_var.yml
+    - package.json
+    - package-lock.json
+
+
+resources:
+  # DynamoDB
+  - ${file(resources/dyndb.yml)}
+  # CognitoUserPool
+  - ${file(resources/cognito_user_pool.yml)}
+  # IAM
+  - ${file(resources/iam.yml)}

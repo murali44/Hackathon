@@ -1,0 +1,70 @@
+Resources:
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: ${self:custom.cognitoPoolName}
+      Schema:
+        - Name: preferred_username
+          AttributeDataType: String
+          Mutable: true
+          Required: true
+        - Name: name
+          AttributeDataType: String
+          Mutable: true
+          Required: true
+        - Name: email
+          AttributeDataType: String
+          Mutable: false
+          Required: true
+        - Name: phone_number
+          AttributeDataType: String
+          Mutable: false
+          Required: true
+      AliasAttributes:
+        - email
+      MfaConfiguration: OFF
+      EmailVerificationMessage : "Your verification code is {####}."
+      EmailVerificationSubject : "Your verification code"
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: False
+          RequireNumbers: True
+          RequireSymbols: False
+          RequireUppercase: True
+
+
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: ${self:custom.cognitoPoolName}-client
+      GenerateSecret: false
+      UserPoolId:
+        Ref: CognitoUserPool
+      ExplicitAuthFlows:
+        - ADMIN_NO_SRP_AUTH
+
+
+  ApiGatewayAuthorizer:
+      DependsOn:
+        - ApiGatewayRestApi
+      Type: AWS::ApiGateway::Authorizer
+      Properties:
+        Name: ${self:custom.cognitoPoolName}-authorizer
+        IdentitySource: method.request.header.Authorization
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        Type: COGNITO_USER_POOLS
+        ProviderARNs:
+          - Fn::GetAtt: [CognitoUserPool, Arn]
+
+
+# Print User Pool and App Client id.
+Outputs:
+  UserPoolId:
+      Value:
+          Ref: CognitoUserPool
+  ClientId:
+      Value:
+          Ref: CognitoUserPoolClient
+
