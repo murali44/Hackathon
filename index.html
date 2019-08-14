@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en-US">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Javascript SDK-->
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.1/velocity.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/velocity/1.2.1/velocity.ui.min.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.7.16.min.js"></script>
+    <script src="js/amazon-cognito-auth.min.js"></script>
+    <script src="js/amazon-cognito-identity.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+
+    <!-- Local JS -->
+    <script src="js/cognito_handler.js" type="text/javascript"></script>
+    <script src="js/cognito_config.js"></script>
+
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" />
+
+    <title>Cognito Signin</title>
+</head>
+
+<body>
+
+    <h1 align="center">Cognito Signin</h1>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <button class="nav-link" data-toggle="modal" data-target="#email-login-modal" style="width: 300px; margin: 0 auto;">Login with Email</button>
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <!-- Email Login Modal -->
+    <div id="email-login-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Login</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="text" class="form-control simplebox" id="username" placeholder="Email address or username">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control simplebox" id="password" placeholder="Password">
+                    </div>
+
+                    <button type="submit" id="loginButton" class="btn btn-sm btn-default simplebutton loginButton" onclick="loginButton()">Login</button>
+                    <button type="button" class="btn btn-sm btn-link newAccButton" id="showSignUp" data-toggle="modal" data-target="#signup-modal" data-dismiss="modal">Don't have an account?</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup verfication Modal -->
+    <div id="verify-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    Registration successful. Please check your email inbox or spam folder for your verification code.
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="opt" class="form-control" id="otp" placeholder="Verification Code" pattern=".*" required>
+                    </div>
+                    <button type="submit" id="verifyButton" class="btn btn-sm btn-default simplebutton verifyButton" onclick="verifyButton()">Verify</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sign Up Modal -->
+    <div id="signup-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Sign up</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="text" class="form-control simplebox" id="preferredUsernameRegister" placeholder="Username">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control simplebox" id="personalnameRegister" placeholder="Name">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control simplebox" id="emailInputRegister" placeholder="Email">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control simplebox" id="phoneInputRegister" placeholder="Phone Number as +1xxx000xxxx">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control simplebox" id="passwordInputRegister" placeholder="Password">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control simplebox" id="confirmationpassword" placeholder="Confirm Password">
+                    </div>
+                    <button type="submit" id="signupButton" class="btn btn-sm btn-default simplebutton newAccButton" onclick="registerButton()">Sign Up</button>
+                    <button type="button" class="btn btn-sm btn-link loginButton" id="showLogin" data-toggle="modal" data-target="#login-modal" data-dismiss="modal">Already have an account?</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -17,3 +17,21 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 2
         WriteCapacityUnits: 2
+  VideoTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Delete # In prod we want to use 'Retain' as insurance against accidental stack deletion.
+    Properties:
+      TableName: VideoTable
+      AttributeDefinitions:
+        - AttributeName: username
+          AttributeType: S
+        - AttributeName: videoname
+          AttributeType: S
+      KeySchema:
+        - AttributeName: username
+          KeyType: HASH
+        - AttributeName: videoname
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2

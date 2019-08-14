@@ -39,6 +39,11 @@ provider:
         - dynamodb:ListStreams
       Resource:
         - "Fn::GetAtt": [ FollowTable, Arn ]
+    - Effect: Allow
+      Action:
+        - cognito-idp:*
+      Resource: 
+          "Fn::GetAtt": [ CognitoUserPool, Arn ]
 
 plugins:
   - serverless-python-requirements
@@ -101,6 +106,23 @@ functions:
           type: COGNITO_USER_POOLS
           authorizerId:
             Ref: ApiGatewayAuthorizer
+  Unfollow_User:
+    name: ${self:custom.stage}-Unfollow_User
+    description: Given a username, unfollow them.
+    handler: src/user.Unfollow_User
+    memorySize: 128
+    timeout: 10
+    reservedConcurrency: 20
+    events:
+    - http:
+        path: unfollow
+        method: post
+        cors: true
+        authorizer:
+          type: COGNITO_USER_POOLS
+          authorizerId:
+            Ref: ApiGatewayAuthorizer
+
 
 
 
@@ -118,5 +140,3 @@ resources:
   - ${file(resources/dyndb.yml)}
   # CognitoUserPool
   - ${file(resources/cognito_user_pool.yml)}
-  # IAM
-  - ${file(resources/iam.yml)}

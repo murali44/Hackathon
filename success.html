@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en-US">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Javascript SDK-->
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.1/velocity.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/velocity/1.2.1/velocity.ui.min.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.7.16.min.js"></script>
+    <script src="js/amazon-cognito-auth.min.js"></script>
+    <script src="js/amazon-cognito-identity.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+
+    <!-- Local JS -->
+    <script src="js/cognito_handler.js" type="text/javascript"></script>
+    <script src="js/cognito_config.js"></script>
+
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" />
+
+    <title>Cognito Signin</title>
+</head>
+
+<body>
+
+    <h1 align="center">Cognito Signin</h1>
+    <br>
+    <br>
+    <br>
+    <center>You are In!</center>
+    <center>Copy the token below and use in the postman. Place the token in the Authorization header of postman.</center>
+    <br>
+    <br>
+    <center>Token: <textarea readonly id="token" rows="15" cols="50" style="resize:none" placeholder="Token displayed here"></textarea></center>
+
+
+    <button class="nav-link" style="width: 300px; margin: 0 auto;" onclick="signOut()">Sign out</button>
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+</body>
+
+<script>
+    window.onload = function() {
+        let lbl = document.getElementById('token');
+        console.log(localStorage.getItem("IdToken"));
+
+        lbl.innerText = localStorage.getItem("IdToken");
+    }
+</script>
+
+</html>

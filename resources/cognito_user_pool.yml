@@ -22,6 +22,8 @@ Resources:
           Required: true
       AliasAttributes:
         - email
+      AutoVerifiedAttributes:
+        - email
       MfaConfiguration: OFF
       EmailVerificationMessage : "Your verification code is {####}."
       EmailVerificationSubject : "Your verification code"
