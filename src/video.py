@@ -99,3 +99,8 @@ def Delete_Video(event, context):
     }
 
     return response
+
+
+def Get_Followed_User_Videos_List(event, context):
+    current_user = event['requestContext']['authorizer']['claims']['cognito:username']
+    request = json.loads(event["body"])
