@@ -75,7 +75,8 @@ def Follow_User(event, context):
     user = get_user(username=data['username'])
 
     dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('FollowTable')  # Use env variable to store table name
+    tablename = os.environ['FOLLOWTABLE']
+    table = dynamodb.Table(tablename)  # Use env variable to store table name
 
     timestamp = datetime.datetime.utcnow().isoformat()
     item = {

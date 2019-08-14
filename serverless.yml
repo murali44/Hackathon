@@ -5,6 +5,9 @@ custom:
   stage: ${opt:stage, self:provider.stage}
   # Cognito settings
   cognitoPoolName: ${self:custom.stage}-UpworkHackathon-user-pool
+  videoTableName: ${self:custom.stage}-VideoTable
+  followTableName: ${self:custom.stage}-FollowTable
+  s3bucketName: ${self:custom.stage}-videobucket
   pythonRequirements:
     dockerizePip: true
 
@@ -23,6 +26,12 @@ provider:
         Ref: CognitoUserPoolClient
       REGION:
         ${self:provider.region}
+      VIDEOTABLE:
+        ${self:custom.videoTableName} 
+      FOLLOWTABLE:
+        ${self:custom.followTableName} 
+      S3BUCKET:
+        ${self:custom.s3bucketName}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -39,41 +48,23 @@ provider:
         - dynamodb:ListStreams
       Resource:
         - "Fn::GetAtt": [ FollowTable, Arn ]
+        - "Fn::GetAtt": [ VideoTable, Arn ]
     - Effect: Allow
       Action:
         - cognito-idp:*
       Resource: 
           "Fn::GetAtt": [ CognitoUserPool, Arn ]
+    - Effect: Allow
+      Action:
+        - s3:*
+      Resource: 
+          "Fn::GetAtt": [ VideoBucket, Arn ]
 
 plugins:
   - serverless-python-requirements
 
 
 functions:
-  Sign_Up:
-    name: ${self:custom.stage}-Sign_Up
-    description: User signup.
-    handler: src/cognito.Sign_Up
-    memorySize: 128
-    timeout: 10
-    reservedConcurrency: 20
-    events:
-    - http:
-        path: signup
-        method: post
-        cors: true
-  Confirm_Sign_Up:
-    name: ${self:custom.stage}-Confirm_Sign_Up
-    description: Confirm User signup with emailed code.
-    handler: src/cognito.Confirm_Sign_Up
-    memorySize: 128
-    timeout: 10
-    reservedConcurrency: 20
-    events:
-    - http:
-        path: confirm
-        method: post
-        cors: true
   Follow_User:
     name: ${self:custom.stage}-Follow_User
     description: Given a username/email/phone, follow the user.
@@ -122,6 +113,38 @@ functions:
           type: COGNITO_USER_POOLS
           authorizerId:
             Ref: ApiGatewayAuthorizer
+  Upload_Video:
+    name: ${self:custom.stage}-Upload_Video
+    description: Upload a file to s3.
+    handler: src/video.Upload_Video
+    memorySize: 128
+    timeout: 10
+    reservedConcurrency: 20
+    events:
+    - http:
+        path: upload
+        method: post
+        cors: true
+        authorizer:
+          type: COGNITO_USER_POOLS
+          authorizerId:
+            Ref: ApiGatewayAuthorizer
+  Delete_Video:
+    name: ${self:custom.stage}-Delete_Video
+    description: Delete a file from s3.
+    handler: src/video.Delete_Video
+    memorySize: 128
+    timeout: 10
+    reservedConcurrency: 20
+    events:
+    - http:
+        path: delete
+        method: post
+        cors: true
+        authorizer:
+          type: COGNITO_USER_POOLS
+          authorizerId:
+            Ref: ApiGatewayAuthorizer
 
 
 
@@ -140,3 +163,5 @@ resources:
   - ${file(resources/dyndb.yml)}
   # CognitoUserPool
   - ${file(resources/cognito_user_pool.yml)}
+  # S3
+  - ${file(resources/s3.yml)}

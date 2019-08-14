@@ -3,7 +3,7 @@ Resources:
     Type: AWS::DynamoDB::Table
     DeletionPolicy: Delete # In prod we want to use 'Retain' as insurance against accidental stack deletion.
     Properties:
-      TableName: FollowTable
+      TableName: ${self:custom.followTableName}
       AttributeDefinitions:
         - AttributeName: username
           AttributeType: S
@@ -21,16 +21,16 @@ Resources:
     Type: AWS::DynamoDB::Table
     DeletionPolicy: Delete # In prod we want to use 'Retain' as insurance against accidental stack deletion.
     Properties:
-      TableName: VideoTable
+      TableName: ${self:custom.videoTableName} 
       AttributeDefinitions:
         - AttributeName: username
           AttributeType: S
-        - AttributeName: videoname
+        - AttributeName: filename
           AttributeType: S
       KeySchema:
         - AttributeName: username
           KeyType: HASH
-        - AttributeName: videoname
+        - AttributeName: filename
           KeyType: RANGE
       ProvisionedThroughput:
         ReadCapacityUnits: 2
