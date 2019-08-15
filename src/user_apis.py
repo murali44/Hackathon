@@ -4,9 +4,10 @@ import json
 import logging
 import os
 import time
-import uuid
 
 from boto3.dynamodb.conditions import Key, Attr
+
+tablename = os.environ['FOLLOWTABLE']
 
 # ************ Util Function ************
 
@@ -35,15 +36,11 @@ def get_user(username=None, phone=None, email=None):
     elif email:
         filter = "email = " + "\"" + email + "\""
 
-    print "Cognito Filter:"
-    print filter
-
     response = cognito_client.list_users(
         UserPoolId=os.environ['USERPOOL_ID'],
         AttributesToGet=['preferred_username'],
         Filter=filter)
 
-    print response
     user = response["Users"][0]['Username']
 
     return user
@@ -53,10 +50,6 @@ def get_user(username=None, phone=None, email=None):
 
 def Follow_User(event, context):
     current_user = event['requestContext']['authorizer']['claims']['cognito:username']
-
-    if 'body' not in event or event['body'] == '':
-        logging.error("WARNING: Validation Failed: Empty request body.")
-        raise Exception("Empty request received. Check all inputs.")
 
     data = json.loads(event['body'])
     user = None
@@ -71,12 +64,7 @@ def Follow_User(event, context):
         logging.error("WARNING: Validation Failed: Empty request body.")
         raise Exception("Empty request received. Check all inputs.")
 
-    # First check if the user exisits
-    user = get_user(username=data['username'])
-
-    dynamodb = boto3.resource('dynamodb')
-    tablename = os.environ['FOLLOWTABLE']
-    table = dynamodb.Table(tablename)  # Use env variable to store table name
+    table = boto3.resource('dynamodb').Table(tablename) 
 
     timestamp = datetime.datetime.utcnow().isoformat()
     item = {
@@ -100,10 +88,6 @@ def Follow_User(event, context):
 def Unfollow_User(event, context):
     current_user = event['requestContext']['authorizer']['claims']['cognito:username']
 
-    if 'body' not in event or event['body'] == '':
-        logging.error("WARNING: Validation Failed: Empty request body.")
-        raise Exception("Empty request received. Check all inputs.")
-
     data = json.loads(event['body'])
     user_to_unfollow = None
 
@@ -118,7 +102,7 @@ def Unfollow_User(event, context):
         raise Exception("Empty request received. Check all inputs.")
 
     dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('FollowTable')  # Use env variable to store table name
+    table = dynamodb.Table(tablename) 
 
     response = table.delete_item(Key={'username': current_user, 'followed_username': user_to_unfollow})
 
@@ -134,14 +118,13 @@ def Unfollow_User(event, context):
 def Get_Followed_Users_List(event, context):
     current_user = event['requestContext']['authorizer']['claims']['cognito:username']
     dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('FollowTable') # Use env variable to store table name
+    table = dynamodb.Table(tablename) # Use env variable to store table name
 
     response = table.query(KeyConditionExpression=Key('username').eq(current_user))
     items = response['Items']
 
     for item in items:
         del item['username']
-        del item['CreatedAt']
         del item['UpdatedAt']
 
     response = {

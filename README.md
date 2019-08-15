@@ -48,7 +48,8 @@ You'll need this token for accessing all the API's via Postman
 
 ## Using postman to access APIs
 
-The postman collection can be found here: https://www.getpostman.com/collections/3f95225750a80feaa16a
+The postman collection can be found here:
+[https://www.getpostman.com/collections/3f95225750a80feaa16a](https://www.getpostman.com/collections/3f95225750a80feaa16a)
 
 Import the collection into your postman app. `File > Import > Import From Link` 
 
@@ -58,7 +59,7 @@ Import the collection into your postman app. `File > Import > Import From Link`
 Use postman to talk to the API's. By default the collection has all requests pointing to my deployed environment.
 
 
-- You'll need to update the user token in the header with a valid one you received when you logged in earlier.
+- You'll need to update the `Authorization` header with a valid token you received when you logged in earlier.
 
 ![Auth Header](https://i.ibb.co/gwSnCRy/auth-header.png "Auth Header")
 
@@ -72,4 +73,9 @@ Use postman to talk to the API's. By default the collection has all requests poi
 ## Design Considerations
 -	We don't need to create a seperate API for user sign-up and sign-in Cognito provides us with a API for user registration and login. I've decided to use that instead of create a pass through API for this feature.
 -	All API's are configured to use the CognitoAuthorizer. The APIGateway expects a header named `Authorizer` in all requests with a valid user token.
--	
+
+
+## What's missing
+Upload to S3 bucket.
+- I was able to create an upload API which return a pre-signed link to upload to the video S3 bucket. However, uploads do not seem to be working. I suspect this is due to a missing IAM role, which causes an `access denied` error when I try to upload a file.
+- To complete the exercise without the above feature blocking me, I've updated the VideoTable with the username and the filename only. The S3 object url should be added once uploads work.

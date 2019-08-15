@@ -68,7 +68,7 @@ functions:
   Follow_User:
     name: ${self:custom.stage}-Follow_User
     description: Given a username/email/phone, follow the user.
-    handler: src/user.Follow_User
+    handler: src/user_apis.Follow_User
     memorySize: 128
     timeout: 10
     reservedConcurrency: 20
@@ -84,7 +84,7 @@ functions:
   Get_Followed_Users_List:
     name: ${self:custom.stage}-Get_Followed_Users_List
     description: Given a username, get all usernames followed.
-    handler: src/user.Get_Followed_Users_List
+    handler: src/user_apis.Get_Followed_Users_List
     memorySize: 128
     timeout: 10
     reservedConcurrency: 20
@@ -100,7 +100,7 @@ functions:
   Unfollow_User:
     name: ${self:custom.stage}-Unfollow_User
     description: Given a username, unfollow them.
-    handler: src/user.Unfollow_User
+    handler: src/user_apis.Unfollow_User
     memorySize: 128
     timeout: 10
     reservedConcurrency: 20
@@ -116,7 +116,7 @@ functions:
   Upload_Video:
     name: ${self:custom.stage}-Upload_Video
     description: Upload a file to s3.
-    handler: src/video.Upload_Video
+    handler: src/video_apis.Upload_Video
     memorySize: 128
     timeout: 10
     reservedConcurrency: 20
@@ -132,7 +132,7 @@ functions:
   Delete_Video:
     name: ${self:custom.stage}-Delete_Video
     description: Delete a file from s3.
-    handler: src/video.Delete_Video
+    handler: src/video_apis.Delete_Video
     memorySize: 128
     timeout: 10
     reservedConcurrency: 20
@@ -140,6 +140,22 @@ functions:
     - http:
         path: delete
         method: post
+        cors: true
+        authorizer:
+          type: COGNITO_USER_POOLS
+          authorizerId:
+            Ref: ApiGatewayAuthorizer
+  Get_Followed_User_Videos_List:
+    name: ${self:custom.stage}-Get_Followed_User_Videos_List
+    description: Get all videos of users followed by current user.
+    handler: src/video_apis.Get_Followed_User_Videos_List
+    memorySize: 128
+    timeout: 10
+    reservedConcurrency: 20
+    events:
+    - http:
+        path: followed_videos
+        method: get
         cors: true
         authorizer:
           type: COGNITO_USER_POOLS
