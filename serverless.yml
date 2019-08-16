@@ -16,7 +16,7 @@ provider:
   name: aws
   runtime: python2.7
   stage: dev
-  profile: muralia # Replace with your name profile or remopve to use the default profile.
+  # profile: muralia # Replace with your name profile or remove to use the default profile.
   region: us-east-1 # N.Virginia. Replace with your a region you prefer.
   logRetentionInDays: 14
   environment:
