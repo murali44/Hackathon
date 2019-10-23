@@ -73,3 +73,9 @@ Use postman to talk to the API's. By default the collection has all requests poi
 ## Design Considerations
 -	We don't need to create a seperate API for user sign-up and sign-in Cognito provides us with a API for user registration and login. I've decided to use that instead of create a pass through API for this feature.
 -	All API's are configured to use the CognitoAuthorizer. The APIGateway expects a header named `Authorizer` in all requests with a valid user token.
+
+
+## What's missing
+Upload to S3 bucket.
+- I was able to create an upload API which return a pre-signed link to upload to the video S3 bucket. However, uploads do not seem to be working. I suspect this is due to a missing IAM role, which causes an `access denied` error when I try to upload a file.
+- To complete the exercise without the above feature blocking me, I've updated the VideoTable with the username and the filename only. The S3 object url should be added once uploads work.
